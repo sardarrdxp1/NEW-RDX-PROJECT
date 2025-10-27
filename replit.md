@@ -4,6 +4,17 @@
 A feature-rich Facebook Messenger bot built with Node.js using the ws3-fca (Facebook Chat API) library. The bot includes numerous commands for entertainment, utility, and group management.
 
 ## Recent Changes (October 27, 2025)
+
+### Critical Fix: New Groups Not Working (Latest)
+- **Fixed**: ThreadID length detection in `node_modules/priyanshu-fca/src/sendMessage.js`
+  - **Issue**: Bot was not responding in new groups due to incorrect single user detection
+  - **Root Cause**: Line 187 used `threadID.length <= 15` which incorrectly treated 15-character group IDs as single users
+  - **Solution**: Changed to `threadID.length < 15` 
+  - **Impact**: Groups with exactly 15-character threadIDs (like "654192467479608") now work correctly
+  - **Error Fixed**: Error 1545012 "you're not part of the conversation"
+  - **Result**: Bot can now send messages in all new groups without errors
+
+### Previous Fix
 - **Fixed**: ThreadID length detection issue for new groups
   - Changed `is_group_thread` detection from `>= 16` to `>= 15` in `sendTypingIndicatorV2.js`
   - This fixes Error 1545012 where bot couldn't send messages in groups with 15-character threadIDs
