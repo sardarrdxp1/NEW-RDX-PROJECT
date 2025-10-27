@@ -1,0 +1,38 @@
+name: Test Patch Application
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [20.x]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+    - name: Install dependencies (patches will auto-apply)
+      run: npm install
+      
+    - name: Verify patch was applied
+      run: |
+        echo "Checking if patch was applied..."
+        grep -q "threadID.length < 15" node_modules/priyanshu-fca/src/sendMessage.js && echo "✅ Patch applied successfully!" || (echo "❌ Patch NOT applied!" && exit 1)
+        
+    - name: Run bot (optional - just to verify it starts)
+      run: |
+        echo "Bot would start here in production"
+        # Uncomment below if you want to test bot startup
+        # timeout 30 npm start || true
